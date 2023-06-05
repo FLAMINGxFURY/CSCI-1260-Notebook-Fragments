@@ -1,0 +1,104 @@
+#!markdown
+
+<span style="font-size:16px;">
+<h1 style="font-family:Copperplate">Applications of Dictionaries</h1>
+So far, this chapter has covered the benefits of using dictionaries to associate keys with values - the gradebook example illustrates this. Dictionaries can also optimize other workloads. The two examples below demonstrate how dictionaries can be used to aggregate data and to optimize lookups.
+</span>
+
+#!markdown
+
+<span style="font-size:16px;">
+<h4 style="font-family:Copperplate">Aggregating Data</h4>
+Dictionaries are a convenient structure for generating counts of items: for example, in a collection of values whose elements occur at varying frequencies. This need, for example, arises in Natural Language Processing applications that generate <code>bags of words</code>: datasets that match a document’s words with the number of times that these words occur in that document.
+</span>
+
+#!csharp
+
+using System.IO;
+using System.Text.RegularExpressions;
+
+Dictionary<string, int> bag_of_words = new Dictionary<string, int>();
+
+// Count each word in './Assets/theOdyssey.txt'
+using(var reader = new StreamReader("./Assets/theOdyssey.txt")) {
+    while(!reader.EndOfStream){
+        string line = reader.ReadLine();
+        string[] words = line.Split(' ');
+
+        foreach(string word in words) {
+            string clean_word = Regex.Replace(word, @"[^\w\s]", "");    // clean punctuation
+            clean_word = clean_word.ToLower();                          // make lowercase
+
+            if(bag_of_words.ContainsKey(clean_word)) 
+                bag_of_words[clean_word]++;
+            else bag_of_words[clean_word] = 1;            
+        }
+    }
+}
+
+// Print the top 5 most common words
+var top5 = bag_of_words.OrderByDescending(x => x.Value).Take(5);
+
+foreach(KeyValuePair<string, int> word in top5) {
+    Console.WriteLine($"{word.Key} : {word.Value}");
+}
+
+#!markdown
+
+<span style="font-size:16px;">
+<h4 style="font-family:Copperplate">Optimizing Lookups</h4>
+Hashing makes dictionaries incredibly efficient at CRUD (Create-Read-Update-Delete) operations - assuming that effective   keys for a dataset’s values can be readily obtained. One example of applying this is <i>caching</i>. Caching is a method for speeding up subsequent accesses to a resource - for example, a web page. One way to implement a cache is to use a dictionary with key-value pairs that map URLs to a page’s content. When a user requests a web page, the cache is checked to see if the page is in the cache. If it is, the page is returned. If it is not, the page is downloaded and added to the cache.<br /><br />
+Caching can be used for other purposes as well. The example below demonstrates how to use a dictionary to cache the results of a function call.
+</span>
+
+#!csharp
+
+int complexMathEquation(int x) {
+    for(int i = 0; i < 999999999; i++)
+        x = (x * 2) + 1;
+    return x;
+}
+
+Dictionary<int, int> functionCache = new Dictionary<int, int>();
+
+#!markdown
+
+<span style="font-size:16px;">
+After initializing the <code>functionCache</code> above, run the code block below twice. Note the difference in runtime.
+</span>
+
+#!csharp
+
+#!time
+try {
+    Console.WriteLine(functionCache[5]);
+}
+catch(KeyNotFoundException) {
+    functionCache[5] = complexMathEquation(5);
+    Console.WriteLine(functionCache[5]);
+}
+
+#!markdown
+
+<hr /><span style="font-size:14px;">
+<b style="font-size:16px;">Exercises</b> &emsp;|&emsp; <i>Place your answers in a <b>new</b> markdown cell below.</i>
+<ol>
+<li> What is the purpose of the following code?
+
+```csharp
+public int this[string key] {
+    set {
+        //...
+    }
+    get {
+        //...
+    }
+} 
+```
+
+</li> 
+<li>Explain how function caching would be helpful for a function that returns the nth item of the Fibonacci sequence given n.<br /><br /></li>
+<li>The AssociativeArray class in 5.1 uses a list. Could its performance be improved by using a tree instead? And, if so, what requirements would need to be imposed on the key-value pairs?<br /><br /></li>
+<li>Chaining also uses lists. Given that tree accesses are O(log n), which underlying structure will perform better on average? Why? In what cases does this vary, if any?</li>
+</ol>
+</span>

@@ -1,0 +1,190 @@
+#!markdown
+
+<span style="font-size:16px;">
+<h1 style="font-family:Copperplate">Access by Association</h1>
+Ordered data structures like arrays and lists support the use of <code>indexes</code> to access their elements. Indexing implies that a structure’s data has a natural ordering: one that’s often based on time or spatial location. Other datasets, however, have no such order. For example, the following array contains grades for a class of 10 students:<br /><br />
+
+>```csharp
+>int[] grades = { 97, 26, 85, 85, 92, 91, 89, 85, 74, 90 };
+>```
+It is not clear how to assign meaningful, numeric indexes for this list of data; e.g., for Andrea as opposed to Tomas.
+</span>
+
+#!markdown
+
+<span style="font-size:16px;">
+<h4 style="font-family:Copperplate">Key-Value Pairs</h4>
+A common alternative to indexing uses a <code>key-value pair</code> to associate a <i>value</i>, or item of interest, with a <i>key</i>, or a mnemonic and typically unique referent for that value. Collections of key-value pairs allow values to be accessed using their keys. These collections go by many names, including <code>associative arrays</code>, <code>symbol tables</code>, <code>dictionaries</code>, and <code>maps</code>. They are often implemented as <code>hash tables</code> or <code>hash maps</code>, which support fast access to their contents: for example, in modern versions of .NET and Python. <br/><br/>
+Your language's documentation will document how it names and implements these collections. C#'s <code>Dictionary</code> documentation can be found <a href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2?view=net-6.0">here</a>.
+</span>
+
+#!markdown
+
+<span style="font-size:16px;">
+<h4 style="font-family:Copperplate">Using Key-Value Pairs</h4>
+Using HTML, a gradebook could be structured as follows:<br /><br />
+<table>
+    <tr>
+        <th>Student</th>
+        <th>Grade</th>
+    </tr>
+    <tr>
+        <td>Andrea</td>
+        <td>97</td>
+    </tr>
+    <tr>
+        <td>Samuel</td>
+        <td>26</td>
+    </tr>
+    <tr>
+        <td>Gerald</td>
+        <td>85</td>
+    </tr>
+    <tr>
+        <td>Tomas</td>
+        <td>85</td>
+    </tr>
+    <tr>
+        <td>William</td>
+        <td>92</td>
+    </tr>
+    <tr>
+        <td>Xander</td>
+        <td>91</td>
+    </tr>
+    <tr>
+        <td>Rachael</td>
+        <td>89</td>
+    </tr>
+    <tr>
+        <td>Collin</td>
+        <td>85</td>
+    </tr>
+    <tr>
+        <td>Brutus</td>
+        <td>74</td>
+    </tr>
+    <tr>
+        <td>Caesar</td>
+        <td>90</td>
+    </tr>
+</table>
+<br />
+Here, the <code>key</code> is the student's name, and the <code>value</code> is the student's grade. Accesses of the grade should look like this:<br /><br />
+
+>```csharp
+>Console.WriteLine(gradebook["Andrea"]); // 97
+>gradebook["Samuel"] += 10; // now 36
+>//...
+>```
+This table can be represented by a <code>List</code> of <code>KeyValuePairs</code>.
+
+#!csharp
+
+List<KeyValuePair<string, int>> gradebook = new List<KeyValuePair<string, int>>();
+
+gradebook.Add(new KeyValuePair<string, int>("Andrea", 97));     // Add Andrea's grade to the gradebook
+Console.WriteLine("Andrea's grade is: " + gradebook["Andrea"]); // Print Andrea's grade
+
+#!markdown
+
+<span style="font-size:16px;">
+This example won’t compile because <code>List</code> does not have a way to access elements by key. We can iterate through the list to find a particular key:
+</span>
+
+#!csharp
+
+foreach (KeyValuePair<string, int> student in gradebook) {
+    if (student.Key == "Andrea") 
+        Console.WriteLine("Andrea's grade is: " + student.Value);
+}
+
+#!markdown
+
+<span style="font-size:16px;">
+However, this code is not easy to read. The <code>AssociativeArray</code> class below is a wrapper around a <code>List</code> of <code>KeyValuePairs</code> that provides access to the table's elements by key. 
+</span>
+
+#!csharp
+
+public class KVP<TKey, TValue> { // KeyValuePairs in C# are completely immutable; this class allows for a mutable Value
+    public TKey Key { get; }
+    public TValue Value { get; set; }
+
+    public KVP(TKey key, TValue value) {
+        this.Key = key;
+        this.Value = value;
+    }
+}
+
+#!csharp
+
+class AssociativeArray {
+    // The underlying data structure
+    private List<KVP<string, int>> _list = new List<KVP<string, int>>();
+
+    // We can override the [] operator using the 'this' keyword
+    public int this[string key] {
+        set {
+            // If the key already exists, update the value
+            for (int i = 0; i < _list.Count; i++) {
+                if (_list[i].Key == key) {
+                    _list[i].Value = value; // value is a special keyword that refers to the value to the right of the '='
+                    return;
+                }
+            }
+
+            // Otherwise, add the key/value pair to the list
+            _list.Add(new KVP<string, int>(key, value));
+        }
+        get {
+            // This is the loop from the previous example
+            foreach (KVP<string, int> item in _list) {
+                if (item.Key == key) return item.Value;
+            }
+            return -1;   //assumption: students won't be assigned negative grades, so -1 is a safe default
+        }
+    }
+
+    // This method adds a key/value pair to the list
+    public void Add(string key, int value) {
+        _list.Add(new KVP<string, int>(key, value));
+    }    
+}
+
+#!csharp
+
+// Create a new associative array and add the grades to it
+AssociativeArray gradebook = new AssociativeArray();
+gradebook["Andrea"] = 97;
+gradebook["Samuel"] = 26;
+gradebook["Gerald"] = 85;
+
+// Print the grades
+Console.WriteLine("Andrea's grade is: " + gradebook["Andrea"]);
+Console.WriteLine("Samuel's grade is: " + gradebook["Samuel"]);
+Console.WriteLine("Gerald's grade is: " + gradebook["Gerald"]);
+
+// Update Samuel's grade
+gradebook["Samuel"] += 10;
+Console.WriteLine("Samuel's grade is: " + gradebook["Samuel"]);
+
+#!markdown
+
+<span style="font-size:16px;">
+This code clarifies whose grade is being accessed. The next sections cover applications for these types of data structures and how to make them more efficient. 
+</span>
+
+#!markdown
+
+<hr /><span style="font-size:14px;">
+<b style="font-size:16px;">Exercises</b> &emsp;|&emsp; <i>Place your answers in a <b>new</b> markdown cell below.</i>
+<ol>
+<li>Given <kbd>array =  {17.5, 16.7, 0.0, 8.4, 99.3, 66.7, 59.8}</kbd>, what value does <code>array[2]</code> access?<br /><br /></li>
+<li>Given the same array, what value does <code>array[“Tuesday”]</code> access?<br /><br /></li>
+<li>Given: <br /> <kbd>dictionary = {<br />&emsp;Sunday: 17.5,<br /> &emsp;Monday: 16.7,<br /> &emsp;Tuesday: 0.0,<br /> &emsp;Wednesday: 8.4,<br /> &emsp;Thursday: 99.3,<br /> &emsp;Friday: 66.7,<br /> &emsp;Saturday: 59.8<br />}</kbd><br /> what value does <code>dictionary[2]</code> access?<br /><br /></li>
+<li>Given the same dictionary, what value does <code>dictionary[“Tuesday”]</code> access?<br /><br /></li>
+<li>Given the same dictionary, what value does <code>dictionary[“February”]</code> access?<br /><br /></li>
+<li>What can you infer about the data being stored in these structures? How does that inference change from one to the other, if at all?</li>
+</ol>
+</span>

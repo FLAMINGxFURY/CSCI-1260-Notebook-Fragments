@@ -1,0 +1,198 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":null,"items":[{"name":"csharp","languageName":"C#","aliases":["c#","cs"]},{"name":"fsharp","languageName":"F#","aliases":["f#","fs"]},{"name":"pwsh","languageName":"PowerShell","aliases":["powershell"]},{"name":"javascript","languageName":"JavaScript","aliases":["js"]},{"name":"html","languageName":"HTML"},{"name":"sql","languageName":"SQL"},{"name":"kql","languageName":"KQL"},{"name":"mermaid","languageName":"Mermaid"},{"name":"httpRequest","languageName":"http"},{"name":"value"}]}}
+
+#!markdown
+
+<span style="font-size:16px;">
+<h1 style="font-family:Copperplate">Arrays</h1>
+<code>Arrays</code> are gridlike data structures that store multiple instances of one type of item: e.g., <code>ints</code>: <kbd>[1, 2, 3]</kbd>, <code>doubles</code>: <kbd>[1.2, 0.144579, 63.0]</kbd>, or <code>strings</code>: <kbd>["Hello", "World!"]</kbd>.
+</span>
+
+#!markdown
+
+<span style="font-size:16px;">
+<h4 style="font-family:Copperplate;margin-bottom:6pt;">Declaring an Array</h4>
+Declaring an array is similar to declaring a variable. First, declare the type of values that the array stores. Then, use square brackets (<code>[]</code>) to indicate that it is an array:
+</span>
+<br /><br />
+
+>```csharp
+>int[] ArrayOfIntegers;
+>```
+
+#!markdown
+
+<span style="font-size:16px;">
+<h4 style="font-family:Copperplate;margin-bottom:6pt;">Initializing an Array</h4>
+An array’s contents can be initialized by assigning a value to each of its items:
+</span>
+<br /><br />
+
+>```csharp
+>int[] arrayOfIntegers = {1, 2, 3, 4};
+>```
+
+<span style="font-size:16px;">
+Alternatively, the <code>new</code> keyword specifies an array’s size and initializes its elements to a type-dependent default value. For example, unspecified <code>integers</code> are initialized to 0.
+</span>
+<br /><br />
+
+>```csharp
+>int[] arrayOfIntegers = new int[4];
+>```
+
+<span style="font-size:16px;">
+Below are some examples.
+</span>
+
+#!csharp
+
+// Create an array of two strings
+string[] arrayOfStrings = {"Hello", "World!"};
+
+// Create an array of four integers, initialized to 0. 
+int[] arrayOfIntegers = new int[4];
+
+// You can also use the "new" keyword like this: 
+double[] arrayOfDoubles = new double[3] {1.2, 0.144579, 63.0};
+
+// Or this: 
+char[] arrayOfCharacters = new char[] {'a', 'Z', '.'};
+
+//This prints each array:
+Console.WriteLine($"The array of strings: \t\t[{string.Join(", ", arrayOfStrings)}]\n");
+Console.WriteLine($"The array of integers: \t\t[{string.Join(", ", arrayOfIntegers)}]\n");
+Console.WriteLine($"The array of doubles: \t\t[{string.Join(", ", arrayOfDoubles)}]\n");
+Console.WriteLine($"The array of characters: \t[{string.Join(", ", arrayOfCharacters)}]\n");
+
+#!markdown
+
+<span style="font-size:16px;">
+<h4 style="font-family:Copperplate;margin-bottom:6pt;">Accessing Array Values</h4>
+<code>Array</code> elements are accessed using <i>indexing</i>. Each of an array’s elements is assigned an <i>index</i>: a non-negative integer that references that element's contents. The array's first element is assigned 0. Succeeding elements are assigned integer indexes in <i>ascending order</i>.<br /><br />
+In C#, array elements are accessed using <code>[i]</code> where <kbd>i</kbd> is the index of the element to access. Given the array <kbd><code>SalesPerRegister</code> = {15, 4, 8, 9, 3}</kbd>, the following code will print 8 to the console:</span>
+<br /><br />
+
+>```csharp
+>Console.Write(SalesPerRegister[2]);
+>```
+
+<span style="font-size:16px;">
+Indexing can be used to alter an array’s elements. The following code changes the value 9 to 10.</span>
+<br /><br />
+
+>```csharp
+>SalesPerRegister[3] = 10;
+>```
+
+#!markdown
+
+<span style="font-size:16px;">
+<h4 style="font-family:Copperplate;margin-bottom:6pt;">Properties and Methods</h4>
+Programs that use arrays commonly scan their values, possibly updating them during the scan. C#, like most languages, supports the use of a loop with an index variable to step through an array’s values. Additionally, C#’s <code>foreach</code> loop steps through an array’s elements in ascending order. 
+</span>
+
+#!csharp
+
+int[] SalesPerRegister = {15, 4, 8, 9, 3};
+
+//Print 8
+Console.WriteLine($"Original Value: {SalesPerRegister[2]}");
+
+//Register 3 just recorded a sale! Below, its value is being incremented.
+SalesPerRegister[2]++;
+
+//Print the new value
+Console.WriteLine($"Altered Value: {SalesPerRegister[2]}"); 
+
+//Below are examples demonstrating built-in array properties and methods.
+Console.WriteLine("The Array:");
+
+//This displays the array
+for(int i = 0; i < SalesPerRegister.Length; i++) {
+    Console.Write($"{SalesPerRegister[i]} ");
+}
+
+Console.WriteLine("\nThe Array with foreach:");
+
+//This also displays the array
+foreach (int x in SalesPerRegister) {
+    Console.Write($"{x} ");
+}
+
+//This method reverses an array's contents
+Array.Reverse(SalesPerRegister);
+
+Console.WriteLine("\nThe Array Reversed:");
+
+for(int i = 0; i < SalesPerRegister.Length; i++) {
+    Console.Write($"{SalesPerRegister[i]} ");
+}
+
+//Find the index of the first element that contains the value 4
+Console.Write("\n");
+Console.WriteLine($"The Index of 4: {Array.IndexOf(SalesPerRegister, 4)}");
+
+//Clear the array
+Array.Clear(SalesPerRegister);
+
+Console.WriteLine("The Array Cleared:");
+
+for(int i = 0; i < SalesPerRegister.Length; i++) {
+    Console.Write($"{SalesPerRegister[i]} ");
+}
+
+#!markdown
+
+<span style="font-size:16px;">
+Support for <code>foreach</code> loops is less common, particularly in older languages like C. To see what constructs your language supports, keep its documentation handy: for example, C#'s documentation on arrays is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.array?view=net-6.0">here</a>.
+</span>
+
+#!markdown
+
+<span style="font-size:16px;">
+<h4 style="font-family:Copperplate">Arrays in Memory</h4>
+Languages like C# that support arrays commonly store each array in a contiguous block of memory. This practice allows an array variable to be treated as a reference type: i.e., a variable that stores the address of an array's first location in memory. This also allows an array’s index to be treated as an offset from this first address: i.e., an indicator of how many objects to look ahead of that address. That is why (e.g.) <kbd>array[0]</kbd> accesses the first element - we are adding 0 to <kbd>array</kbd>’s address. <br /><br />
+<img src="https://raw.githubusercontent.com/FLAMINGxFURY/TextbookTemp/main/Chapter%201%20-%20Array%20and%20Array%20Algorithms/Assets/ArraysInMemory.jpg" style="width:90%;"/><br />
+<a href="https://beginnersbook.com/2018/10/data-structure-array/" style="font-size:11px;">Source: BeginnersBook.com</a>
+</span>
+
+#!markdown
+
+<hr /><span style="font-size:14px;">
+<b style="font-size:16px;">Exercises</b> &emsp;|&emsp; <i>Place your answers in a <b>new</b> markdown cell below.</i>
+<ol>
+<li> What does the following code do?
+
+```csharp
+int[] monthlySales = new int[];
+```
+</li> 
+<li>Given the array <kbd><code>inchesOfSnow</code> = [7, 2, 0, 0, 1, 0, 5]</kbd>, what does the following code do?
+
+```csharp
+Console.WriteLine(inchesOfSnow[5]);
+```
+</li>
+<li> Given the above array, what does the following code do?
+
+```csharp
+inchesOfSnow[4] = 2;
+```
+</li>
+<li> What does the following code do?
+
+```csharp
+bool[] questionsCorrect = [true, false, false, true, true];
+```
+</li>
+<li> What does the following code do?
+
+```csharp
+bool[] questionsCorrect = {true, false, false, true, true};
+```
+</li>
+<li> Give some examples of builtin <code>Array</code> methods in C#. What do they do?
+</li>
+</span>
